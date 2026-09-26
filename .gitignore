@@ -1,0 +1,26 @@
+# Confidential drafts, dated evidence, scratch output, and backups.
+/.local/
+
+# Python environment and generated caches.
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+# Public downloads and generated datasets are rebuilt locally.
+/data/raw/
+/data/canonical/
+/data/prepared/
+
+# Trained model exports remain eligible for Git LFS.
+# Resume bundles include optimizer state, metrics, and internal provenance.
+/artifacts/runs/
+
+# Legacy internal output paths remain ignored during workspace migration.
+/reports/
+/guide/
+/work/
+/configs/study.yaml
+*.egg-info/
+.env
+.env.*
+!.env.example
