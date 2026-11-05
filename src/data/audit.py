@@ -97,6 +97,9 @@ def extract_and_inspect(archive: Path, destination: Path) -> dict:
     return {"archive_entries": entries, "headers": headers, "schema_hash": object_hash(headers)}
 
 def prepare(archive: Path, output: Path, sizes=(200,2000)) -> dict:
+    sizes = tuple(int(size) for size in sizes)
+    if not sizes or any(size < 1 for size in sizes) or len(set(sizes)) != len(sizes):
+        raise ValueError("Cohort sizes must be distinct positive integers")
     started = time.perf_counter()
     raw = archive.parent / "extracted"
     audit = extract_and_inspect(archive, raw)
@@ -219,7 +222,8 @@ def prepare(archive: Path, output: Path, sizes=(200,2000)) -> dict:
     audit["cutoffs_utc8_ms"] = CUTOFFS
     audit["elapsed_seconds"] = time.perf_counter()-started
     write_json(output / "data-audit.json", audit)
-    report = reports_dir(ROOT) / "data-audit.md"
+    report_name = "data-audit.md" if output.resolve() == (DATA_ROOT / "canonical").resolve() else f"data-audit-{output.name}.md"
+    report = reports_dir(ROOT) / report_name
     report.parent.mkdir(parents=True, exist_ok=True)
     report.write_text("# KuaiSAR-small local data audit\n\nComplete release integrity verified; canonical cohort files are outside Git.\n\n```json\n"+json.dumps(audit,indent=2)+"\n```\n\nMetadata is a released static snapshot. Search VIDEO/IMAGE_ATLAS candidates use left joins; missing metadata never removes a candidate. Excluded candidate types affect the evaluation population. Recommendation duplicate exposures are retained as recorded. Empty filtered search sessions remain issued-query history. Inconsistent search sessions are quarantined, with counts above. User/social snapshots are audited by header/row count and excluded from features.\n",encoding="utf-8")
     db.close()
@@ -230,5 +234,7 @@ if __name__ == "__main__":
     parser=argparse.ArgumentParser()
     parser.add_argument("--archive",type=Path,default=DATA_ROOT/"raw/KuaiSAR.zip")
     parser.add_argument("--output",type=Path,default=DATA_ROOT/"canonical")
+    parser.add_argument("--sizes", type=int, nargs="+", default=[200, 2000],
+                        help="Nested cohort sizes selected exclusively from training-eligible users")
     args=parser.parse_args()
-    prepare(args.archive,args.output)
+    prepare(args.archive,args.output,tuple(args.sizes))

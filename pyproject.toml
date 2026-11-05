@@ -4,16 +4,20 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "trace-ranking"
-version = "0.1.0"
+version = "2.1.0"
 description = "Temporal search and recommendation ranking study"
 requires-python = ">=3.11,<3.15"
-dependencies = ["numpy>=1.24", "torch>=2.3", "pyarrow>=16", "duckdb>=1.2", "scikit-learn>=1.4", "PyYAML>=6", "psutil>=5.9"]
+dependencies = ["numpy>=1.24", "torch>=2.3", "duckdb>=1.2", "psutil>=5.9"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
+train = ["pyarrow>=16", "scikit-learn>=1.4", "PyYAML>=6"]
+
+[project.scripts]
+trace = "trace_ranking:main"
 
 [tool.setuptools.packages.find]
-include = ["src*"]
+include = ["src*", "trace_ranking*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

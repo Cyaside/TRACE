@@ -1,0 +1,14 @@
+{
+  "format": "trace-model-distribution-v1",
+  "version": "2.1.0",
+  "run_id": "trace-v21-ndcg-utility-seed42",
+  "selected_step": 2000,
+  "weights_format": "trace-v2-inference-v1",
+  "weights_sha256": "f054566288cc8f4e53414bb573fce209947e1b3df6884fd2ea145536ba432df8",
+  "weights_bytes": 198875189,
+  "data_hash": "d3973e54d77bde77efe1c7495b3c9bd362aa4ee81216c40dcb27815c670bc79b",
+  "distribution": "GitHub Release asset; no Git LFS required",
+  "release_url": "https://github.com/Cyaside/TRACE/releases/tag/v2.1.0",
+  "asset": "TRACE-2.1.0.zip",
+  "weights_path_in_archive": "TRACE-2.1.0/model.pt"
+}

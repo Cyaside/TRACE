@@ -22,13 +22,13 @@ Use Python 3.11 with a compatible PyTorch build:
 
 ```powershell
 py -3.11 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+.\.venv\Scripts\python.exe -m pip install -e ".[dev,train]"
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
 Data commands use `data/`; training commands use `artifacts/runs/`. Public datasets and their generated derivatives are ignored and rebuilt using the [dataset guide](data/README.md). Exported trained models use `artifacts/models/` and Git LFS. Generated audit reports and experiment ledgers go to `.local/reports/YYYY-MM-DD/`, using the Asia/Jakarta calendar date. Draft study guides are in `.local/guide/` and the current study contract is in `.local/configs/`.
 
-Install [Git LFS](https://git-lfs.com/) before cloning to retrieve the included trained weights. In an existing checkout, `git lfs pull` retrieves those exports. Dataset preparation downloads the public release once; loading existing model exports does not require retraining.
+Download the [TRACE 2.1.0 release bundle](https://github.com/Cyaside/TRACE/releases/tag/v2.1.0) for the selected weights, CPU demo and SDK. Its weights are distributed as release assets and do not require Git LFS. Historical V1 exports remain in LFS; to clone source without fetching them, set `GIT_LFS_SKIP_SMUDGE=1` for the clone, or use the bundle's `source.zip`. Dataset preparation is optional for the included demo and downloads the public data once when needed.
 
 For available options, run a command with `--help`, for example:
 
@@ -36,6 +36,41 @@ For available options, run a command with `--help`, for example:
 .\.venv\Scripts\python.exe -m src.features.prepare --help
 .\.venv\Scripts\python.exe -m scripts.run_baselines --help
 ```
+
+## Use the trained model
+
+For the installed CLI/SDK and the complete portable model bundle, see
+[release usage](docs/release.md). Its commands are `trace demo`, `trace rank`,
+`trace encode`, `trace verify` and `trace about`; Python uses
+`from trace_ranking import TraceRanker`.
+
+The complete model bundle contains inference weights, a wheel, CPU launcher,
+self-contained synthetic demo inputs, model card, final metrics and checksums.
+After extracting that bundle:
+
+```powershell
+.\run-demo.ps1
+.\run-demo.ps1 -Scenario recommendation
+```
+
+The first run installs CPU dependencies; later inference runs locally. The demo
+uses explicitly synthetic inputs and actual trained weights. Measured quality
+is reported separately in the model card and matched final-test metrics.
+
+```python
+from trace_ranking import TraceRanker
+ranker = TraceRanker.from_bundle("PATH_TO_MODEL_BUNDLE")
+result = ranker.rank(encoded_request)
+```
+
+Installed commands include `trace verify`, `trace demo`, `trace rank`,
+`trace encode` and `trace about`. Dataset-backed real-session replay is an
+optional research workflow in [the CLI walkthrough](docs/cli-demo.md); the
+portable demo does not depend on private working folders or retraining.
+
+TRACE ranks supplied candidates on anonymized KuaiSAR interactions. Full-catalog
+retrieval, natural-language travel/shopping semantics, online CTR uplift and
+proven algorithmic novelty are not claims made by this artifact.
 
 ## Working rules
 

@@ -1,1 +1,1 @@
-"""CPU serving (later checkpoint)."""
+"""CPU ranking runtime, release integrity and optional prepared-data encoder."""

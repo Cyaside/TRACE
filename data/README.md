@@ -43,7 +43,23 @@ The download is approximately 0.49 GB; extracted CSV files, audit tables and pre
 
 ## Fixed preparation contract
 
-- **Cohorts:** `smoke` has 200 users and `pilot` has 2,000 users. Eligibility requires both services before the training cutoff. Users are ordered by SHA-256 of UTF-8 `42:<raw_user_id>`; the smaller cohort is a prefix of the larger. These sizes and the selection seed are fixed in `src.data.audit`, not CLI flags.
+### Release cohort (10,000 users)
+
+The V2/V2.1 release uses 10,000 users rather than the historical 2,000-user pilot.
+The adapter supports explicit nested cohort sizes. To rebuild this cohort:
+
+```powershell
+.\.venv\Scripts\python.exe -m src.data.audit --sizes 10000 --output data/canonical/release
+.\.venv\Scripts\python.exe -m src.features.prepare --canonical data/canonical/release/10000 --output data/prepared/release-10000-v1
+```
+
+The portable release's optional `trace encode` command compares semantic
+vocabulary/feature/cohort/frequency identities in `encoder-contract.json`.
+Parquet file bytes may differ across dependency versions; matching encoder
+semantics is distinct from claiming identical historical experiment bytes.
+Raw inputs use anonymized numeric dataset tokens, not natural-language queries.
+
+- **Cohorts:** defaults are `smoke` with 200 users and `pilot` with 2,000 users; `--sizes` selects other explicit sizes such as the release's 10,000 users. Eligibility requires both services before the training cutoff. Users are ordered by SHA-256 of UTF-8 `42:<raw_user_id>`; smaller cohorts are prefixes of larger ones. The selection seed and eligibility rule are fixed in source.
 - **Splits:** timestamps are interpreted in UTC+08:00. Training precedes 29 May 2023 00:00; validation runs from that boundary to 30 May 00:00; test runs from 30 May to 31 May 00:00. Events at or after the final boundary are excluded from scored requests. These are dataset time boundaries.
 - **Candidates:** inconsistent search sessions are quarantined. Search keeps `VIDEO`/`IMAGE_ATLAS` candidates and merges repeated items using the maximum click label. Recommendation retains recorded exposures, including duplicates. Missing item metadata does not remove candidates.
 - **Features:** histories contain only strictly earlier exposure blocks and issued queries, capped at 50 blocks. Simultaneous events are pooled before being appended to history. Historical feedback, historical search result IDs and user attributes are excluded. Item/token vocabularies are fitted on training data; padding is ID 0 and unknown values use ID 1. The token cap is 50.
@@ -55,7 +71,7 @@ The download is approximately 0.49 GB; extracted CSV files, audit tables and pre
 
 `raw/` holds the archive and extracted CSVs. Each `canonical/<cohort>/` holds normalized Parquet files, selected users and a checksummed manifest. Each `prepared/<cohort>-v1/` holds requests, history blocks, item metadata, the training vocabulary, feature policy and a checksummed manifest. Audit measurements and dated reports remain local.
 
-The pipeline reads its preparation policy from source code; it does not require the private `.local/configs/study.yaml`. Use the matching training vocabulary when encoding inputs for an exported neural model. Dependency versions can change Parquet serialization and therefore file hashes; a newly generated manifest alone does not prove compatibility with a historical model. Exact historical training and evaluation reproduction additionally requires the matching environment and run settings, which are not released here.
+The pipeline reads its preparation policy from source code; it does not require the private `.local/configs/study.yaml`. Use the matching training vocabulary when encoding inputs for an exported neural model. Dependency versions can change Parquet serialization and therefore file hashes; a newly generated manifest alone does not prove compatibility with a historical model. The final model bundle includes its selected settings and observed training environment. Exact historical training/evaluation reproduction additionally requires matching original prepared bytes and library behavior; semantic encoder compatibility alone does not establish identical experiment results.
 
 ## Attribution and use
 
