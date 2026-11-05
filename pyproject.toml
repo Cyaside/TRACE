@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "trace-ranking"
 version = "2.1.0"
 description = "Temporal search and recommendation ranking study"
+license = {file = "LICENSE"}
 requires-python = ">=3.11,<3.15"
 dependencies = ["numpy>=1.24", "torch>=2.3", "duckdb>=1.2", "psutil>=5.9"]
 

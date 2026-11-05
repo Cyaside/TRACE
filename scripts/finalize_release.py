@@ -26,6 +26,7 @@ def build_wheel(output):
     with tempfile.TemporaryDirectory(prefix="trace-wheel-",dir=ROOT/".local/work") as tmp:
         staging=Path(tmp)
         shutil.copyfile(ROOT/"pyproject.toml",staging/"pyproject.toml")
+        shutil.copyfile(ROOT/"LICENSE",staging/"LICENSE")
         for source in (ROOT/"src").rglob("*.py"):
             if "__pycache__" in source.parts or source.name=="teacher.py":continue
             destination=staging/source.relative_to(ROOT)

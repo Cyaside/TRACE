@@ -120,18 +120,21 @@ def assemble_release(weights, frozen, evaluation, wheel, destination, model_card
             "baseline_test":evaluation["baseline_metrics"],"scope":"one selected seed; offline benchmark only"})
         (destination/"MODEL_CARD.md").write_text(model_card,encoding="utf-8")
         (destination/"README.md").write_text(readme,encoding="utf-8")
+        shutil.copyfile(Path(source_root)/"LICENSE",destination/"LICENSE")
         (destination/"NOTICE.md").write_text(
             "# Attribution and distribution\n\nTRACE is an independent implementation using PyTorch. "
             "KuaiSAR training data: Zhongxiang Sun and colleagues, CIKM 2023, https://kuaisar.github.io/ . "
             "The dataset license notice is CC BY-NC-SA 4.0. Dataset files and real session snapshots are not included. "
             "The demo inputs are invented. Dependency licenses remain with their respective authors. "
-            "No open-source license is assigned to TRACE source/weights by this private packaging command; "
-            "rights remain with their owners. Repository visibility is not changed.\n",encoding="utf-8")
+            "Original TRACE source code and accompanying documentation are licensed under the MIT License; "
+            "see LICENSE. This grant excludes datasets and trained model weight files. "
+            "No additional license for the weights is granted by this packaging command. "
+            "Repository visibility is not changed.\n",encoding="utf-8")
         shutil.copyfile(Path(source_root)/"scripts/templates/run-demo.ps1",destination/"run-demo.ps1")
         source=Path(source_root)
         with zipfile.ZipFile(destination/"source.zip","w",compression=zipfile.ZIP_DEFLATED) as archive:
             # Explicit source selection; never walk the project root for assets.
-            names=["pyproject.toml","README.md","data/README.md","docs/cli-demo.md","docs/release.md",
+            names=["LICENSE","pyproject.toml","README.md","data/README.md","docs/cli-demo.md","docs/release.md",
                    "docs/README.md","configs/README.md","artifacts/models/README.md"]
             names += [p.relative_to(source).as_posix() for p in (source/"src").rglob("*.py")
                       if "__pycache__" not in p.parts and p.name!="teacher.py"]
